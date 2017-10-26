@@ -28,6 +28,7 @@ struct Record {
   int16_t  z;
 };
 
+static const int version = 2;
 static const double G = 9.80665;
 
 /////////////////////////////////////////////////////////////////////////////
