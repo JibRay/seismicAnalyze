@@ -97,7 +97,8 @@ int main(int argc, char **argv) {
   bool          first = true;
 
   if (argc < 2) {
-    std::cout << "seismicAnalyse: missing file argument" << std::endl
+    std::cout << "seismicAnalyse version " << version << std::endl
+              << "Missing file argument" << std::endl
               << "Usage:" << std::endl
               << "  seismicAnalyse <data-file>" << std::endl;
     return 1;
