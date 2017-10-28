@@ -93,27 +93,35 @@ void getValues(std::ifstream *input, Reading *reading, time_t fileTime) {
 int main(int argc, char **argv) {
   std::ifstream input;
   Reading       reading;
-  int           readingCount = 0;
+  int           argIndex = 1, readingCount = 0;
   struct tm    *utcTime;
   double        prevReadingTime, t, fractionalSeconds, sx, sy, sz;
   double        vx, vy, vz;
   time_t        ut;
-  bool          first = true;
+  bool          first = true, useCommas = false;
 
-  if (argc < 2) {
+  if ((argc < 2) || (strcmp(argv[1], "-h") == 0)) {
     std::cout << "seismicAnalyse version " << version << std::endl
-              << "Missing file argument" << std::endl
               << "Usage:" << std::endl
-              << "  seismicAnalyse <data-file>" << std::endl;
+              << "  seismicAnalyse [-c] <data-file>" << std::endl
+              << "where:" << std::endl
+              << "  -c = use commas instead of spaces to separate columns"
+              << std::endl;
     return 1;
   }
 
-  input.open(argv[1], std::ios::binary);
+  for (int i = 1; i < argc; i++)
+    if (strcmp(argv[i], "-c") == 0) {
+      useCommas = true;
+      argIndex = i + 1;
+    }
+
+  input.open(argv[argIndex], std::ios::binary);
   if (input.fail()) {
-    std::cout << "Failed to open " << argv[1] << std::endl;
+    std::cout << "Failed to open " << argv[argIndex] << std::endl;
     return 1;
   }
-  time_t fileTime = getFileTime(argv[1]);
+  time_t fileTime = getFileTime(argv[argIndex]);
   sx = sy = sz = vx = vy = vz = 0.0;
 
   while (!input.eof()) {
@@ -141,8 +149,13 @@ int main(int argc, char **argv) {
         sy < 0.0 ? sy += c : sy -= c;
         sz < 0.0 ? sz += c : sz -= c;
         */
-        std::cout << readingCount << std::setprecision(6)
-                  << " " << sx << " " << sy << " " << sz << std::endl;
+        if (useCommas) {
+          std::cout << readingCount << std::setprecision(6)
+                    << "," << sx << "," << sy << "," << sz << std::endl;
+        } else {
+          std::cout << readingCount << std::setprecision(6)
+                    << " " << sx << " " << sy << " " << sz << std::endl;
+        }
       }
     }
     prevReadingTime = reading.time;
