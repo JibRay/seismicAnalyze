@@ -3,6 +3,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <iostream>
+#include <iomanip>
 #include <fstream>
 #include <string.h>
 #include <time.h>
@@ -30,7 +31,7 @@ struct Record {
   int16_t  z;
 };
 
-static const int version = 3;
+static const int version = 5;
 static const double G = 9.80665;
 
 /////////////////////////////////////////////////////////////////////////////
@@ -95,6 +96,7 @@ int main(int argc, char **argv) {
   int           readingCount = 0;
   struct tm    *utcTime;
   double        prevReadingTime, t, fractionalSeconds, sx, sy, sz;
+  double        vx, vy, vz;
   time_t        ut;
   bool          first = true;
 
@@ -112,7 +114,7 @@ int main(int argc, char **argv) {
     return 1;
   }
   time_t fileTime = getFileTime(argv[1]);
-  sx = sy = sz = 0.0;
+  sx = sy = sz = vx = vy = vz = 0.0;
 
   while (!input.eof()) {
     getValues(&input, &reading, fileTime);
@@ -124,21 +126,23 @@ int main(int argc, char **argv) {
         double ax = G * reading.values.x / 1000.0;
         double ay = G * reading.values.y / 1000.0;
         double az = G * reading.values.z / 1000.0;
+        // Calculate the velocity.
+        vx += ax * dt;
+        vy += ay * dt;
+        vz += az * dt;
         // Calculate the displacements.
-        double dx = (ax * pow(dt, 2)) / 2.0;
-        double dy = (ay * pow(dt, 2)) / 2.0;
-        double dz = (az * pow(dt, 2)) / 2.0;
-        sx += dx;
-        sy += dy;
-        sz += dz;
+        sx += vx * dt;
+        sy += vy * dt;
+        sz += vz * dt;
         // Correct for drift.
+        /*
         double c = 2.8e-6;
         sx < 0.0 ? sx += c : sx -= c;
         sy < 0.0 ? sy += c : sy -= c;
         sz < 0.0 ? sz += c : sz -= c;
-        std::cout << readingCount << ": sx = " << sx << " sy = "
-                  << sy << " sz = " << sz
-                  << std::endl;
+        */
+        std::cout << readingCount << std::setprecision(6)
+                  << " " << sx << " " << sy << " " << sz << std::endl;
       }
     }
     prevReadingTime = reading.time;
