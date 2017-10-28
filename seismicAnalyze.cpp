@@ -1,5 +1,7 @@
 // seismicAnalyze.cpp
 
+#include <stdint.h>
+#include <stdlib.h>
 #include <iostream>
 #include <fstream>
 #include <string.h>
@@ -28,7 +30,7 @@ struct Record {
   int16_t  z;
 };
 
-static const int version = 2;
+static const int version = 3;
 static const double G = 9.80665;
 
 /////////////////////////////////////////////////////////////////////////////
