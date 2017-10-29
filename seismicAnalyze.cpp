@@ -31,8 +31,10 @@ struct Record {
   int16_t  z;
 };
 
-static const int version = 6;
+static const int version = 7;
 static const double G = 9.80665;
+static const double dVcorrection = 4e-4;
+static const double dScorrection = 4e-6;
 
 /////////////////////////////////////////////////////////////////////////////
 // Functions
@@ -138,17 +140,18 @@ int main(int argc, char **argv) {
         vx += ax * dt;
         vy += ay * dt;
         vz += az * dt;
+        // Correct for velocity drift.
+        vx < 0.0 ? vx += dVcorrection : vx -= dVcorrection;
+        vy < 0.0 ? vy += dVcorrection : vy -= dVcorrection;
+        vz < 0.0 ? vz += dVcorrection : vz -= dVcorrection;
         // Calculate the displacements.
         sx += vx * dt;
         sy += vy * dt;
         sz += vz * dt;
-        // Correct for drift.
-        /*
-        double c = 2.8e-6;
-        sx < 0.0 ? sx += c : sx -= c;
-        sy < 0.0 ? sy += c : sy -= c;
-        sz < 0.0 ? sz += c : sz -= c;
-        */
+        // Correct for displacement drift.
+        sx < 0.0 ? sx += dScorrection : sx -= dScorrection;
+        sy < 0.0 ? sy += dScorrection : sy -= dScorrection;
+        sz < 0.0 ? sz += dScorrection : sz -= dScorrection;
         if (useCommas) {
           std::cout << readingCount << std::setprecision(6)
                     << "," << ax << "," << ay << "," << az
