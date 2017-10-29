@@ -31,7 +31,7 @@ struct Record {
   int16_t  z;
 };
 
-static const int version = 5;
+static const int version = 6;
 static const double G = 9.80665;
 
 /////////////////////////////////////////////////////////////////////////////
@@ -151,9 +151,13 @@ int main(int argc, char **argv) {
         */
         if (useCommas) {
           std::cout << readingCount << std::setprecision(6)
+                    << "," << ax << "," << ay << "," << az
+                    << "," << vx << "," << vy << "," << vz
                     << "," << sx << "," << sy << "," << sz << std::endl;
         } else {
           std::cout << readingCount << std::setprecision(6)
+                    << " " << ax << " " << ay << " " << az
+                    << " " << vx << " " << vy << " " << vz
                     << " " << sx << " " << sy << " " << sz << std::endl;
         }
       }
